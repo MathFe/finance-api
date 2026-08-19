@@ -1,4 +1,4 @@
-package com.mathfe.finance.Entity;
+package com.mathfe.finance.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

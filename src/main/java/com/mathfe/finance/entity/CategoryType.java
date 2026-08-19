@@ -1,4 +1,4 @@
-package com.mathfe.finance.Entity;
+package com.mathfe.finance.entity;
 
 public enum CategoryType {
     INCOME,
