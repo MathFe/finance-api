@@ -1,9 +1,8 @@
-package com.mathfe.finance.Repository;
+package com.mathfe.finance.repository;
 
-import com.mathfe.finance.Entity.Category;
-import com.mathfe.finance.Entity.CategoryType;
-import com.mathfe.finance.Entity.User;
-import org.aspectj.weaver.ast.And;
+import com.mathfe.finance.entity.Category;
+import com.mathfe.finance.entity.CategoryType;
+import com.mathfe.finance.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
