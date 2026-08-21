@@ -1,4 +1,8 @@
 package com.mathfe.finance.dto;
 
-public record UserResponseDTO() {
+public record UserResponseDTO(
+        Long id,
+        String name,
+        String email
+) {
 }
