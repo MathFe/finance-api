@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_categories")
+@Table(name = "categories")
 @Getter
 @Setter
 @AllArgsConstructor

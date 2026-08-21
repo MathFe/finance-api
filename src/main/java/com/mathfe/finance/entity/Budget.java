@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_budget")
+@Table(name = "budgets")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_transactions")
+@Table(name = "transactions")
 @Getter
 @Setter
 @NoArgsConstructor
