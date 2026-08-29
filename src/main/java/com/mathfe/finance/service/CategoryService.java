@@ -5,7 +5,6 @@ import com.mathfe.finance.dto.CategoryResponseDTO;
 import com.mathfe.finance.entity.Category;
 import com.mathfe.finance.entity.User;
 import com.mathfe.finance.repository.CategoryRepository;
-import com.mathfe.finance.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
