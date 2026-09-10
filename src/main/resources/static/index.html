@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login / Register Section -->
+        <section id="auth-section" class="active">
+            <h1>Finance App</h1>
+            <div class="auth-container">
+                <div class="form-container">
+                    <h2>Login</h2>
+                    <form id="login-form">
+                        <input type="email" id="login-email" placeholder="Email" required>
+                        <input type="password" id="login-password" placeholder="Password" required>
+                        <button type="submit">Login</button>
+                    </form>
+                    <p id="login-error" class="error-msg"></p>
+                </div>
+
+                <div class="form-container">
+                    <h2>Register</h2>
+                    <form id="register-form">
+                        <input type="text" id="reg-name" placeholder="Name" required>
+                        <input type="email" id="reg-email" placeholder="Email" required>
+                        <input type="password" id="reg-password" placeholder="Password (min 8 chars)" required minlength="8">
+                        <button type="submit">Register</button>
+                    </form>
+                    <p id="reg-error" class="error-msg"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="hidden">
+            <header>
+                <h1>Dashboard</h1>
+                <div class="header-right">
+                    <span id="user-greeting"></span>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Balance & Summary -->
+                <div class="card summary-card">
+                    <h2>Balance</h2>
+                    <h3 id="balance-amount">$0.00</h3>
+                </div>
+
+                <!-- Add Transaction / Category -->
+                <div class="forms-grid">
+                    <div class="card">
+                        <h3>Add Category</h3>
+                        <form id="add-category-form">
+                            <input type="text" id="cat-name" placeholder="Category Name" required>
+                            <select id="cat-type" required>
+                                <option value="EXPENSE">Expense</option>
+                                <option value="INCOME">Income</option>
+                            </select>
+                            <input type="color" id="cat-color" value="#ff0000" required>
+                            <button type="submit">Add Category</button>
+                        </form>
+                        <p id="cat-msg" class="msg"></p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Add Transaction</h3>
+                        <form id="add-transaction-form">
+                            <input type="text" id="trans-desc" placeholder="Description" required>
+                            <input type="number" id="trans-amount" placeholder="Amount" step="0.01" min="0.01" required>
+                            <select id="trans-category" required>
+                                <option value="">Select Category...</option>
+                            </select>
+                            <select id="trans-type" required>
+                                <option value="EXPENSE">Expense</option>
+                                <option value="INCOME">Income</option>
+                            </select>
+                            <input type="date" id="trans-date" required>
+                            <button type="submit">Add Transaction</button>
+                        </form>
+                        <p id="trans-msg" class="msg"></p>
+                    </div>
+                </div>
+
+                <!-- Transactions List -->
+                <div class="card list-card">
+                    <h3>Recent Transactions</h3>
+                    <ul id="transactions-list">
+                        <!-- Transactions injected via JS -->
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
