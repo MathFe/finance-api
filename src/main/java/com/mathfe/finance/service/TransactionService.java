@@ -74,4 +74,25 @@ public class TransactionService {
                 ))
                 .toList();
     }
+
+    public List<TransactionResponseDTO> listByUser(User user) {
+        List<Transaction> transactions = transactionRepository.findByUser(user);
+
+        return transactions.stream()
+                .map(transaction -> new TransactionResponseDTO(
+                        transaction.getId(),
+                        transaction.getDescription(),
+                        transaction.getAmount(),
+                        transaction.getType(),
+                        transaction.getTransactionDate(),
+                        new CategoryResponseDTO(
+                                transaction.getCategory().getId(),
+                                transaction.getCategory().getName(),
+                                transaction.getCategory().getType(),
+                                transaction.getCategory().getColor(),
+                                transaction.getCategory().getCreatedAt()
+                        )
+                ))
+                .toList();
+    }
 }
