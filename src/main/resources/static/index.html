@@ -52,6 +52,51 @@
                     <h3 id="balance-amount">$0.00</h3>
                 </div>
 
+                <!-- Crypto Portfolio Section -->
+                <div class="card crypto-card">
+                    <div class="crypto-header">
+                        <h2>Crypto Portfolio</h2>
+                        <div class="crypto-toggles">
+                            <label>Currency:
+                                <select id="crypto-currency-toggle">
+                                    <option value="USD">USD</option>
+                                    <option value="BRL">BRL</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="crypto-summary">
+                        <h3>Total Crypto Value: <span id="crypto-total-value">$0.00</span></h3>
+                    </div>
+
+                    <div class="crypto-add">
+                        <form id="add-crypto-form" class="crypto-form">
+                            <input type="text" id="crypto-coin-id" placeholder="Coin ID (e.g. bitcoin)" required>
+                            <input type="number" id="crypto-amount" placeholder="Amount (e.g. 0.5)" step="0.00000001" min="0.00000001" required>
+                            <button type="submit">Add/Update Holding</button>
+                        </form>
+                        <p id="crypto-msg" class="msg"></p>
+                    </div>
+
+                    <table class="crypto-table" id="crypto-table">
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Amount</th>
+                                <th>Price</th>
+                                <th>Value</th>
+                                <th>24h %</th>
+                                <th>7d %</th>
+                                <th>30d %</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="crypto-list">
+                            <!-- Crypto injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
                 <!-- Add Transaction / Category -->
                 <div class="forms-grid">
                     <div class="card">
