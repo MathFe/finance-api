@@ -1,8 +1,11 @@
 package com.mathfe.finance.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
@@ -18,6 +21,12 @@ public class CryptoDataService {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String COINGECKO_API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids={ids}&price_change_percentage=24h,7d,30d";
     private static final String COINGECKO_SIMPLE_PRICE_URL = "https://api.coingecko.com/api/v3/simple/price?ids={ids}&vs_currencies=usd,brl&include_24hr_change=true";
+
+    // Without a key, CoinGecko rate-limits by IP, which on Render is shared across many
+    // unrelated tenants and stays saturated regardless of how little this app calls it.
+    // A demo API key gets its own rate-limit bucket instead.
+    @Value("${COINGECKO_API_KEY:}")
+    private String coinGeckoApiKey;
 
     private final Map<String, CoinData> cache = new ConcurrentHashMap<>();
     private volatile long lastFetchTime = 0;
@@ -56,13 +65,14 @@ public class CryptoDataService {
 
         try {
             String idsParam = String.join(",", coinIds);
+            HttpEntity<Void> requestEntity = new HttpEntity<>(buildHeaders());
 
             // 1. Fetch detailed market data in USD
             String marketsUrl = COINGECKO_API_URL.replace("{ids}", idsParam);
             ResponseEntity<List<Map<String, Object>>> marketResponse = restTemplate.exchange(
                     marketsUrl,
                     HttpMethod.GET,
-                    null,
+                    requestEntity,
                     new ParameterizedTypeReference<List<Map<String, Object>>>() {}
             );
 
@@ -71,7 +81,7 @@ public class CryptoDataService {
             ResponseEntity<Map<String, Map<String, Object>>> priceResponse = restTemplate.exchange(
                     priceUrl,
                     HttpMethod.GET,
-                    null,
+                    requestEntity,
                     new ParameterizedTypeReference<Map<String, Map<String, Object>>>() {}
             );
 
@@ -109,6 +119,14 @@ public class CryptoDataService {
         }
 
         return cache;
+    }
+
+    private HttpHeaders buildHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        if (coinGeckoApiKey != null && !coinGeckoApiKey.isBlank()) {
+            headers.set("x-cg-demo-api-key", coinGeckoApiKey);
+        }
+        return headers;
     }
 
     private BigDecimal getBigDecimal(Object value) {
