@@ -54,12 +54,16 @@ public class CryptoDataService {
         try {
             String idsParam = String.join(",", coinIds);
 
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+            org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
+
             // 1. Fetch detailed market data in USD
             String marketsUrl = COINGECKO_API_URL.replace("{ids}", idsParam);
             ResponseEntity<List<Map<String, Object>>> marketResponse = restTemplate.exchange(
                     marketsUrl,
                     HttpMethod.GET,
-                    null,
+                    entity,
                     new ParameterizedTypeReference<List<Map<String, Object>>>() {}
             );
 
@@ -68,7 +72,7 @@ public class CryptoDataService {
             ResponseEntity<Map<String, Map<String, Object>>> priceResponse = restTemplate.exchange(
                     priceUrl,
                     HttpMethod.GET,
-                    null,
+                    entity,
                     new ParameterizedTypeReference<Map<String, Map<String, Object>>>() {}
             );
 
