@@ -17,19 +17,17 @@ public class CryptoDataService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String COINGECKO_API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids={ids}&price_change_percentage=24h,7d,30d";
-
-    // Fallback BRL conversion if we don't fetch directly (CoinGecko only allows one vs_currency in markets endpoint easily,
-    // but we can actually fetch simple/price with multiple vs_currencies or just use an exchange rate.
-    // For simplicity and completeness per the requirements, we will fetch both vs USD and BRL or do the math if needed.
-    // Wait, the easiest is to just use simple/price endpoint:
     private static final String COINGECKO_SIMPLE_PRICE_URL = "https://api.coingecko.com/api/v3/simple/price?ids={ids}&vs_currencies=usd,brl&include_24hr_change=true";
 
-    // Better yet, use markets for USD and just fetch BRL conversion rate.
-    // Let's use the markets endpoint for USD which gives all the 7d/30d changes, and simple price for BRL.
-
     private final Map<String, CoinData> cache = new ConcurrentHashMap<>();
-    private long lastFetchTime = 0;
+    private volatile long lastFetchTime = 0;
+    private volatile long lastAttemptTime = 0;
     private static final long CACHE_DURATION_MS = 60 * 1000; // 1 minute
+    // CoinGecko's free tier rate-limits (429) after a handful of requests. Without this,
+    // a failed fetch retries on the very next request too, which keeps re-triggering the
+    // rate limit and leaves the price stuck at zero indefinitely. Back off between attempts
+    // so a temporary 429 gets a chance to clear.
+    private static final long RETRY_BACKOFF_MS = 30 * 1000; // 30 seconds
 
     public static class CoinData {
         public String id;
@@ -47,9 +45,14 @@ public class CryptoDataService {
             return new HashMap<>();
         }
 
-        if (System.currentTimeMillis() - lastFetchTime < CACHE_DURATION_MS && cache.keySet().containsAll(coinIds)) {
+        long now = System.currentTimeMillis();
+        boolean cacheCoversRequest = now - lastFetchTime < CACHE_DURATION_MS && cache.keySet().containsAll(coinIds);
+        boolean recentAttempt = now - lastAttemptTime < RETRY_BACKOFF_MS;
+        if (cacheCoversRequest || recentAttempt) {
             return cache;
         }
+
+        lastAttemptTime = now;
 
         try {
             String idsParam = String.join(",", coinIds);
