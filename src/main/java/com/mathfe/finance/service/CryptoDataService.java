@@ -30,12 +30,11 @@ public class CryptoDataService {
 
     private final Map<String, CoinData> cache = new ConcurrentHashMap<>();
     private volatile long lastFetchTime = 0;
-    private volatile long lastAttemptTime = 0;
+    private volatile long lastFailureTime = 0;
     private static final long CACHE_DURATION_MS = 60 * 1000; // 1 minute
-    // CoinGecko's free tier rate-limits (429) after a handful of requests. Without this,
-    // a failed fetch retries on the very next request too, which keeps re-triggering the
-    // rate limit and leaves the price stuck at zero indefinitely. Back off between attempts
-    // so a temporary 429 gets a chance to clear.
+    // A failed fetch used to retry on the very next request too, which kept re-triggering
+    // CoinGecko's rate limit and left the price stuck at zero indefinitely. Back off after a
+    // failure (only) so a 429 gets a chance to clear before we try again.
     private static final long RETRY_BACKOFF_MS = 30 * 1000; // 30 seconds
 
     public static class CoinData {
@@ -56,12 +55,10 @@ public class CryptoDataService {
 
         long now = System.currentTimeMillis();
         boolean cacheCoversRequest = now - lastFetchTime < CACHE_DURATION_MS && cache.keySet().containsAll(coinIds);
-        boolean recentAttempt = now - lastAttemptTime < RETRY_BACKOFF_MS;
-        if (cacheCoversRequest || recentAttempt) {
+        boolean recentFailure = now - lastFailureTime < RETRY_BACKOFF_MS;
+        if (cacheCoversRequest || recentFailure) {
             return cache;
         }
-
-        lastAttemptTime = now;
 
         try {
             String idsParam = String.join(",", coinIds);
@@ -115,6 +112,7 @@ public class CryptoDataService {
 
         } catch (Exception e) {
             System.err.println("Failed to fetch crypto data: " + e.getMessage());
+            lastFailureTime = now;
             // If API fails, we return whatever is in cache, even if stale
         }
 
